@@ -12,7 +12,7 @@ namespace System.Collections.Generic
     public class OrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
         where TKey : class
     {
-        readonly OrderedDictionary _privateDictionary;
+        private readonly OrderedDictionary _privateDictionary;
         private Lazy<IReadOnlyList<TKey>> _cache;
 
         public OrderedDictionary()
@@ -41,26 +41,11 @@ namespace System.Collections.Generic
             _cache = new Lazy<IReadOnlyList<TKey>>(KeyList);
         }
 
-        public int Count
-        {
-            get
-            {
-                return _privateDictionary.Count;
-            }
-        }
+        public int Count => _privateDictionary.Count;
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReadOnly => false;
 
-        public TKey this[int index]
-        {
-            get { return _cache.Value[index]; }
-        }
+        public TKey this[int index] => _cache.Value[index];
 
         public TValue this[TKey key]
         {
@@ -68,12 +53,12 @@ namespace System.Collections.Generic
             {
                 if (key == null)
                 {
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
 
                 if (_privateDictionary.Contains(key))
                 {
-                    return (TValue)_privateDictionary[key];
+                    return (TValue) _privateDictionary[key];
                 }
 
                 throw new KeyNotFoundException();
@@ -82,7 +67,7 @@ namespace System.Collections.Generic
             {
                 if (key == null)
                 {
-                    throw new ArgumentNullException("key");
+                    throw new ArgumentNullException(nameof(key));
                 }
 
                 _privateDictionary[key] = value;
@@ -106,10 +91,7 @@ namespace System.Collections.Generic
             return keys;
         }
 
-        public ICollection<TKey> Keys
-        {
-            get { return KeyList(); }
-        }
+        public ICollection<TKey> Keys => KeyList();
 
         public ICollection<TValue> Values
         {
@@ -139,7 +121,7 @@ namespace System.Collections.Generic
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             _privateDictionary.Add(key, value);
@@ -166,7 +148,7 @@ namespace System.Collections.Generic
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             return _privateDictionary.Contains(key);
@@ -176,23 +158,23 @@ namespace System.Collections.Generic
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
 
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex));
             }
 
             if (array.Rank > 1 || arrayIndex >= array.Length || array.Length - arrayIndex < _privateDictionary.Count)
             {
-                throw new ArgumentException("array argument out of range?", "array");
+                throw new ArgumentException("array argument out of range?", nameof(array));
             }
 
             var index = arrayIndex;
             foreach (DictionaryEntry entry in _privateDictionary)
             {
-                array[index] = new KeyValuePair<TKey, TValue>((TKey)entry.Key, (TValue)entry.Value);
+                array[index] = new KeyValuePair<TKey, TValue>((TKey) entry.Key, (TValue) entry.Value);
                 index++;
             }
         }
@@ -201,7 +183,7 @@ namespace System.Collections.Generic
         {
             foreach (DictionaryEntry entry in _privateDictionary)
             {
-                yield return new KeyValuePair<TKey, TValue>((TKey)entry.Key, (TValue)entry.Value);
+                yield return new KeyValuePair<TKey, TValue>((TKey) entry.Key, (TValue) entry.Value);
             }
         }
 
@@ -226,7 +208,7 @@ namespace System.Collections.Generic
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             var result = _privateDictionary.Contains(key);
@@ -243,11 +225,11 @@ namespace System.Collections.Generic
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             var keyExists = _privateDictionary.Contains(key);
-            value = keyExists ? (TValue)_privateDictionary[key] : default(TValue);
+            value = keyExists ? (TValue) _privateDictionary[key] : default(TValue);
 
             return keyExists;
         }
@@ -274,29 +256,11 @@ namespace System.Collections.Generic
             return _privateDictionary.GetEnumerator();
         }
 
-        bool IDictionary.IsFixedSize
-        {
-            get
-            {
-                return ((IDictionary)_privateDictionary).IsFixedSize;
-            }
-        }
+        bool IDictionary.IsFixedSize => ((IDictionary) _privateDictionary).IsFixedSize;
 
-        bool IDictionary.IsReadOnly
-        {
-            get
-            {
-                return _privateDictionary.IsReadOnly;
-            }
-        }
+        bool IDictionary.IsReadOnly => _privateDictionary.IsReadOnly;
 
-        ICollection IDictionary.Keys
-        {
-            get
-            {
-                return _privateDictionary.Keys;
-            }
-        }
+        ICollection IDictionary.Keys => _privateDictionary.Keys;
 
         void IDictionary.Remove(object key)
         {
@@ -304,13 +268,7 @@ namespace System.Collections.Generic
             ResetCache();
         }
 
-        ICollection IDictionary.Values
-        {
-            get
-            {
-                return _privateDictionary.Values;
-            }
-        }
+        ICollection IDictionary.Values => _privateDictionary.Values;
 
         object IDictionary.this[object key]
         {
@@ -330,29 +288,10 @@ namespace System.Collections.Generic
             _privateDictionary.CopyTo(array, index);
         }
 
-        int ICollection.Count
-        {
-            get
-            {
-                return _privateDictionary.Count;
-            }
-        }
+        int ICollection.Count => _privateDictionary.Count;
 
-        bool ICollection.IsSynchronized
-        {
-            get
-            {
-                return ((ICollection)_privateDictionary).IsSynchronized;
-            }
-        }
+        bool ICollection.IsSynchronized => ((ICollection) _privateDictionary).IsSynchronized;
 
-        object ICollection.SyncRoot
-        {
-            get
-            {
-                return ((ICollection)_privateDictionary).SyncRoot;
-            }
-        }
-
+        object ICollection.SyncRoot => ((ICollection) _privateDictionary).SyncRoot;
     }
 }
